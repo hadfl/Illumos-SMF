@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # version
-our $VERSION = '0.1.0';
+our $VERSION = '0.1.1';
 
 # commands
 my $SVCS   = '/usr/bin/svcs';
@@ -20,7 +20,7 @@ sub new {
     # add Illumos::Zone instance if zone support is required
     $self->{zonesupport} && do {
         require Illumos::Zones;
-        $self->{zone} = Illumos::Zones->new();
+        $self->{zone} = Illumos::Zones->new(debug => $self->{debug});
     };
     
     return bless $self, $class
@@ -481,7 +481,7 @@ object to manage SMF
 
 =head2 zonesupport
 
-if enabled, SMF can handle FMRI in zones
+if enabled, SMF can handle FMRI in zones (requires C<Illumos::Zones>)
 
 =head2 debug
 
@@ -493,89 +493,148 @@ print debug information to STDERR
 
 refreshs the instance
 
+ $smf->refreshFMRI();
+
 =head2 listFMRI
 
 lists all child entities of a FMRI. lists instances only if 'instancesonly' is set.
+
+ $smf->listFMRI($fmri, { zonename => $zone, instancesonly => 1 });
+ $smf->listFMRI($fmri, { instancesonly => 1 });
 
 =head2 fmriExists
 
 checks if the FMRI exists
 
+ $smf->fmriExists($fmri, { zonename => $zone }); 
+ $smf->fmriExists($fmri);
+
 =head2 fmriState
 
 returns the state of the FMRI
+
+ $smf->fmriState($fmri, { zonename => $zone });
+ $smf->fmriState($fmri);
 
 =head2 fmriOnline
 
 checks if the FRMI is online
 
+ $smf->fmriOnline($fmri, { zonename => $zone });
+ $smf->fmriOnline($fmri);
+
 =head2 enable
 
 enables the FMRI
+
+ $smf->enable($fmri, { zonename => $zone });
+ $smf->enable($fmri);
 
 =head2 disable
 
 disables the FMRI
 
+ $smf->disable($fmri, { zonename => $zone });
+ $smf->disable($fmri);
+
 =head2 restart
 
 restarts the FMRI
 
-=head2 propertyExists
-
-checks whether a property or property group exists or not
+ $smf->restart($fmri, { zonename => $zone });
+ $smf->restart($fmri);
 
 =head2 addFMRI
 
 adds an FMRI to SFM
 
+ $smf->addFMRI($fmri, { zonename => $zone });
+ $smf->addFMRI($fmri);
+
 =head2 deleteFMRI
 
 removes an FMRI from SMF
+
+ $smf->deleteFMRI($fmri, { zonename => $zone });
+ $smf->deleteFMRI($fmri);
 
 =head2 addInstance
 
 adds an instance to an existing FMRI
 
+ $smf->addInstance($fmri, $instance, { zonename => $zone });
+ $smf->addInstance($fmri, $instance);
+
 =head2 getPropertyGroups
 
 returns a list of property groups
+
+ $smf->getPropertyGroups($fmri, { zonename => $zone });
+ $smf->addInstance($fmri);
 
 =head2 propertyExists
 
 returns whether a property exists or not
 
+ $smf->propertyExists($fmri, $prop, { zonename => $zone });
+ $smf->propertyExists($fmri, $prop);
+
 =head2 propertyGroupExists
 
 returns whether a property group exists or not
 
+ $smf->propertyGroupExists($fmri, $pg, { zonename => $zone });
+ $smf->propertyGroupExists($fmri, $pg);
+
 =head2 addPropertyGroup
 
-adds a property group to a FMRI
+adds a property group to a FMRI. C<$type> defaults to 'application'
+if not given.
+
+ $smf->addPropertyGroup($fmri, $pg, $type, { zonename => $zone });
+ $smf->addPropertyGroup($fmri, $pg, $type);
 
 =head2 deletePropertyGroup
 
 deletes a property group from a FMRI
 
+ $smf->deletePropertyGroup($fmri, $pg, { zonename => $zone });
+ $smf->deletePropertyGroup($fmri, $pg);
+
 =head2 setProperty
 
-sets a property of a FMRI
+sets a property of a FMRI. C<$type> is guessed if not given.
+
+ $smf->setProperty($fmri, $prop, $value, $type, { zonename => $zone });
+ $smf->setProperty($fmri, $prop, $value, $type);
 
 =head2 setProperties
 
 sets a set of properties of a property group of a FMRI
 
+ $smf->setProperties($fmri, { %props }, { zonename => $zone });
+ $smf->setProperties($fmri, { %props }, $type);
+
 =head2 getProperties
 
 gets the set of properties of a property group of a FMRI
+
+ $smf->getProperties($fmri, $pg, { zonename => $zone });
+ $smf->getProperties($fmri, $pg, $type);
 
 =head2 setFMRIProperties
 
 sets all properties of a FMRI
 
+ $smf->setFMRIProperties($fmri, { %props }, { zonename => $zone });
+ $smf->setFMRIProperties($fmri, { %props });
+
 =head2 getFMRIProperties
 
 gets all properties of a FMRI
+
+ $smf->getFMRIProperties($fmri, { zonename => $zone });
+ $smf->getFMRIProperties($fmri);
 
 =head1 COPYRIGHT
 
