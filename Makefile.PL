@@ -15,7 +15,7 @@ WriteMakefile(
         resources => {
             license     => 'http://opensource.org/licenses/GPL-3.0',
             repository  => 'https://github.com/hadfl/Illumos-SMF',
-            bugtracker  => 'https://github.com/Illumos-SMF/issues'
+            bugtracker  => 'https://github.com/hadfl/Illumos-SMF/issues'
         },
         no_index => {directory => ['t', 'setup']}
     },
