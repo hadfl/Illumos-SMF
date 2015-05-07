@@ -392,7 +392,36 @@ sub getProperties {
     return $properties;
 }
 
-sub getSMFProperties {
+sub setFMRIProperties {
+    my $self       = shift;
+    my $fmri       = shift;
+    my $properties = shift;
+    my $opts = $_[0] // {};
+    
+    $self->addFMRI($fmri, $opts) if !$self->fmriExists($fmri, $opts);
+    # extract property groups
+    my @pg = map { $properties->{$_}->{members} ? $_ : () } keys $properties;
+
+    for my $pg (@pg) {
+        $self->addPropertyGroup($fmri, $pg, $properties->{$pg}->{type}, $opts);
+        for my $prop (keys %{$properties->{$pg}->{members}}) {
+            $self->setProperty($fmri, "$pg/$prop",
+                $properties->{$pg}->{members}->{$prop}->{value},
+                $properties->{$pg}->{members}->{$prop}->{type},
+                $opts);
+        }
+        delete $properties->{$pg};
+    }
+
+    for my $prop (keys %$properties) {
+        $self->setProperty($fmri, $prop,
+            $properties->{$prop}->{value},
+            $properties->{$prop}->{type},
+            $opts);
+    }
+}
+
+sub getFMRIProperties {
     my $self = shift;
     my $fmri = shift;
     my $opts = $_[0] // {};
@@ -429,35 +458,6 @@ sub getSMFProperties {
     return $properties;
 }
 
-sub setSMFProperties {
-    my $self       = shift;
-    my $fmri       = shift;
-    my $properties = shift;
-    my $opts = $_[0] // {};
-    
-    $self->addFMRI($fmri, $opts) if !$self->fmriExists($fmri, $opts);
-    # extract property groups
-    my @pg = map { $properties->{$_}->{members} ? $_ : () } keys $properties;
-
-    for my $pg (@pg) {
-        $self->addPropertyGroup($fmri, $pg, $properties->{$pg}->{type}, $opts);
-        for my $prop (keys %{$properties->{$pg}->{members}}) {
-            $self->setProperty($fmri, "$pg/$prop",
-                $properties->{$pg}->{members}->{$prop}->{value},
-                $properties->{$pg}->{members}->{$prop}->{type},
-                $opts);
-        }
-        delete $properties->{$pg};
-    }
-
-    for my $prop (keys %$properties) {
-        $self->setProperty($fmri, $prop,
-            $properties->{$prop}->{value},
-            $properties->{$prop}->{type},
-            $opts);
-    }
-}
-
 1;
 
 __END__
@@ -468,16 +468,20 @@ Illumos::SMF - SMF control object
 
 =head1 SYNOPSIS
 
-use Illumos::SMF;
-...
-my $smf = Illumos::SMF->new(debug=>0);
-...
+ use Illumos::SMF;
+ ...
+ my $smf = Illumos::SMF->new(zonesupport => 1, debug => 0);
+ ...
 
 =head1 DESCRIPTION
 
 object to manage SMF
 
 =head1 ATTRIBUTES
+
+=head2 zonesupport
+
+if enabled, SMF can handle FMRI in zones
 
 =head2 debug
 
@@ -491,7 +495,7 @@ refreshs the instance
 
 =head2 listFMRI
 
-lists instances of a FMRI
+lists all child entities of a FMRI. lists instances only if 'instancesonly' is set.
 
 =head2 fmriExists
 
@@ -505,17 +509,45 @@ returns the state of the FMRI
 
 checks if the FRMI is online
 
+=head2 enable
+
+enables the FMRI
+
+=head2 disable
+
+disables the FMRI
+
+=head2 restart
+
+restarts the FMRI
+
 =head2 propertyExists
 
 checks whether a property or property group exists or not
+
+=head2 addFMRI
+
+adds an FMRI to SFM
+
+=head2 deleteFMRI
+
+removes an FMRI from SMF
 
 =head2 addInstance
 
 adds an instance to an existing FMRI
 
-=head2 deleteFMRI
+=head2 getPropertyGroups
 
-removes an FMRI from SMF
+returns a list of property groups
+
+=head2 propertyExists
+
+returns whether a property exists or not
+
+=head2 propertyGroupExists
+
+returns whether a property group exists or not
 
 =head2 addPropertyGroup
 
@@ -533,13 +565,17 @@ sets a property of a FMRI
 
 sets a set of properties of a property group of a FMRI
 
-=head2 getProperty
-
-gets a property value of a FMRI
-
 =head2 getProperties
 
-gets a set of properties of a property group of a FMRI
+gets the set of properties of a property group of a FMRI
+
+=head2 setFMRIProperties
+
+sets all properties of a FMRI
+
+=head2 getFMRIProperties
+
+gets all properties of a FMRI
 
 =head1 COPYRIGHT
 
@@ -567,8 +603,6 @@ S<Tobias Oetiker E<lt>tobi@oetiker.chE<gt>>
 
 =head1 HISTORY
 
-2015-04-28 had Zone support
-2014-12-15 had FMRI online/state added
-2014-10-03 had Initial Version
+2015-05-07 had Initial Version
 
 =cut

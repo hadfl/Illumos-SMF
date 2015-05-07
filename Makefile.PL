@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => 'Illumos::SMF',
     VERSION_FROM => 'lib/Illumos/SMF.pm',
-    ABSTRACT     => 'A Perl Module to administrate Illumos SMF',
+    ABSTRACT     => 'A Perl Module to administrate Illumos SMF.',
     AUTHOR       => 'Dominik Hassler <hadfl@cpan.org>',
     LICENSE      => 'gpl_3',
     META_MERGE   => {
