@@ -8,9 +8,8 @@ perl:
   - "5.12"
   - "5.10"
 
-# disable dependency install
-install:
-  - true
+before_install:
+  - cpanm --notest Illumos::Zones
 
 script:
   - perl ./t/smf.t || test $? == 1
