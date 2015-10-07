@@ -19,7 +19,13 @@ sub new {
 
     # add Illumos::Zone instance if zone support is required
     $self->{zonesupport} && do {
-        require Illumos::Zones;
+        eval {
+            require Illumos::Zones;
+        };
+        if ($@) {
+            die "ERROR: Unable to load package Illumos::Zones.";
+        }
+
         $self->{zone} = Illumos::Zones->new(debug => $self->{debug});
     };
     
