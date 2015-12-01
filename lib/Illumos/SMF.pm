@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # version
-our $VERSION = '0.1.3';
+our $VERSION = '0.1.4';
 
 # commands
 my $SVCS   = '/usr/bin/svcs';

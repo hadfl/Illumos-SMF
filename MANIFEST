@@ -4,8 +4,6 @@ MANIFEST.SKIP
 Makefile.PL
 README.md
 lib/Illumos/SMF.pm
-setup/build-devel.sh
-setup/sdbs.inc
 t/smf.t
 t/manifest.t
 t/pod.t
