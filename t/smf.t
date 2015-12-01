@@ -4,7 +4,9 @@ use FindBin;
 use lib $FindBin::Bin.'/../thirdparty/lib/perl5';
 use lib $FindBin::Bin.'/../lib';
 
-use Test::More tests => 3;
+use Test::More;
+plan skip_all => 'Minimum perl v5.14 required.' if ($] < 5.014000);
+plan tests => 3;
 
 use_ok 'Illumos::SMF';
 
