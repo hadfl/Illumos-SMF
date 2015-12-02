@@ -408,7 +408,7 @@ sub setFMRIProperties {
     
     $self->addFMRI($fmri, $opts) if !$self->fmriExists($fmri, $opts);
     # extract property groups
-    my @pg = map { $properties->{$_}->{members} ? $_ : () } keys $properties;
+    my @pg = map { $properties->{$_}->{members} ? $_ : () } keys %$properties;
 
     for my $pg (@pg) {
         $self->addPropertyGroup($fmri, $pg, $properties->{$pg}->{type}, $opts);
