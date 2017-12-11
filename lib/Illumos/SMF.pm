@@ -52,8 +52,10 @@ my $zoneCmd = sub {
 
     return { cmd => [], shellquote => q{"} } if !$zoneName || !$self->{zone};
 
-    my $zone = $self->{zone}->listZone($zoneName);
-    if ($zone && $zone->{state} eq 'running') {
+    my $zone = $self->{zone}->listZone($zoneName, { requireSMF => 1 })
+        or die "ERROR: zone '$zoneName' does not exist or not support SMF (is the zone root dataset mounted?).\n";
+
+    if ($zone->{state} eq 'running') {
         return { cmd => [ $ZLOGIN, $zoneName ], shellquote => q{'"'} };
     }
     else {
